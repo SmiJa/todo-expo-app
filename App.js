@@ -3,41 +3,59 @@ import React, { useState, useRef } from 'react';
 import { StyleSheet, Text, View, ScrollView, TextInput, Button } from 'react-native';
 
 export default function App() {
-  const [items, setItems] = useState([
-    {todo: "First item"},
-    {todo: "Second item"},
-  ]);
-  const [newItemText, setNewItemText] = useState("");
+	const [items, setItems] = useState([
+		{todo: "First item"},
+		{todo: "Second item"},
+	]);
+	const [newItemText, setNewItemText] = useState("");
 
-  const generateList = items.map((item, index) => (
-    <View key={index} style={styles.listItemContainer}>
-      <Text style={styles.item}>{item.todo}</Text>
-    </View>
-  ));
+	const generateList = items.map((item, index) => (
+		<View key={index} style={styles.listItemContainer}>
+		<Text style={styles.item}>{item.todo}</Text>
+		</View>
+	));
 
-  const addToList = () => {
-    setItems([...items, {todo: newItemText}]);
-    setNewItemText("");
+  const checkIfSame = () => {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].todo.toLocaleLowerCase() === newItemText.toLocaleLowerCase()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
-  const checkIfValid = () => {
-    if (newItemText.length > 0 && isNaN(newItemText)) {
-      console.log(newItemText);
-      addToList();
-    } else {
-      console.log('Incorrect input')
-    }
-  } 
+  // const removeItemFromList = (task) => {
+  //   setItems(items.filter((value, index) => index != task))
+  // }
+
+	const addToList = () => {
+		setItems([...items, {todo: newItemText}]);
+		setNewItemText("");
+	}
+
+	const checkIfValid = () => {
+		if (newItemText.length > 0 && isNaN(newItemText)) {
+			console.log(newItemText);
+      if (checkIfSame()) {
+        console.log(newItemText + " already exists.");
+      } else {
+        addToList();
+      }
+			
+		} else {
+			console.log('Incorrect input')
+		}
+	} 
 
 return (
-    <View style={styles.container}>
-    <Text style={styles.header}>Todo List</Text>
+	<View style={styles.container}>
+	<Text style={styles.header}>Todo List</Text>
     <View style={styles.inputWrap}>
         <TextInput
-        style={styles.input}
-        onChangeText = {text => setNewItemText(text)}
-          // defaultValue = {() => setNewItemText("")}
-        value = {newItemText}
+			style={styles.input}
+			onChangeText = {text => setNewItemText(text)}
+			value = {newItemText}
         />
         <View style={styles.btnWrap}>
         <Button
@@ -46,16 +64,16 @@ return (
             onPress={checkIfValid}
         />
 
-          <Button 
+        <Button 
             title="Clear"
             onPress={()=> setNewItemText("")}
-          />
+        />
         </View>
-      </View>
+    </View>
 
-      <ScrollView style={styles.listWrap}>
+    <ScrollView style={styles.listWrap}>
         {generateList}
-      </ScrollView>
+    </ScrollView>
       <StatusBar style="auto" />
     </View>
   );
