@@ -107,15 +107,15 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#121212',
     padding: '0.2em',
-    fontSize: '2em',
-    lineHeight: '2em',
+    // fontSize: '2em',
+    // lineHeight: '2em',
     width: '100%',
     textAlign: 'center',
     color: '#7ca814',
     fontWeight: 'bold'
   },
   input: {
-    border: '2px solid #000',
+    // border: '2px solid #000',
     padding: 5,
     width: '70%',
     marginTop: 20,
