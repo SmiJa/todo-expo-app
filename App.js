@@ -4,10 +4,7 @@ import { StyleSheet, Text, View, ScrollView, TextInput, Button, CheckBox } from 
 
 
 export default function App() {
-	const [items, setItems] = useState([
-		{todo: "First item"},
-		{todo: "Second item"},
-	]);
+	const [items, setItems] = useState([]);
 	const [newItemText, setNewItemText] = useState("");
 
 	const generateList = items.map((item, index) => (
@@ -23,12 +20,16 @@ export default function App() {
 		</View>
 	));
 
+  // Checking for duplicates
   const checkIfSame = () => {
+    // Trimming newItemText and setting it to lowercase
+    let loweredTrimmedText = newItemText.toLocaleLowerCase().trim();
+
     for (let i = 0; i < items.length; i++) {
-      if (items[i].todo.toLocaleLowerCase().trim() === newItemText.toLocaleLowerCase().trim()) {
-        return true;
+      if (items[i].todo.toLocaleLowerCase() === loweredTrimmedText) {
+        return true; // A response of true means the item is already on the list
       } else {
-        return false;
+        return false; // A response of false allows the new item to be added to the list
       }
     }
   }
@@ -43,18 +44,33 @@ export default function App() {
 		setNewItemText("");
 	}
 
+// Checking for a valid input
 	const checkIfValid = () => {
-		if (newItemText.trim().length > 0 && isNaN(newItemText.trim()) && /[a-zA-Z0-9\g]/.test(newItemText.trim())) {
-			console.log(newItemText);
-      if (checkIfSame()) {
-        console.log(newItemText + " already exists.");
-      } else {
-        addToList();
-      }
-			
-		} else {
-			console.log('Incorrect input')
-		}
+    let trimmedText = newItemText.trim(); // Trimmed version of input
+
+    // Doesn't allow for empty input
+    if (trimmedText.length == 0) {
+      console.log('Your Input is empty. Please enter something.');
+      return false;
+    }
+
+    // Doesn't allow for only numbers
+    if (!isNaN(trimmedText)) {
+      console.log('Numbers alone are not allowed.');
+      return false;
+    }
+
+    // Doesn't allow for special characters
+    if (!(/^[a-zA-Z0-9]*$/.test(trimmedText))) {
+      console.log('No special characters allowed.');
+      return false;
+    }
+
+    if (checkIfSame()) {
+      console.log(trimmedText + " already exists.");
+    } else {
+      addToList(); // If false the item will be added to array
+    }
 	} 
 
 return (
@@ -126,13 +142,14 @@ const styles = StyleSheet.create({
   },
   listWrap: {
     display: 'flex',
-    width: '90%',
+    width: '100%',
+    height: '400px',
   },
   listItemContainer: {
-    width: '100%',
+    width: '90%',
     padding: 10,
     backgroundColor: 'rgba(0,0,0,0.3)',
-    margin: 5,
+    margin: 'auto',
   },
   item: {
     color: '#fff',
