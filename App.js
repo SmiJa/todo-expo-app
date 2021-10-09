@@ -4,9 +4,17 @@ import { StyleSheet, Text, View, ScrollView, TextInput, Button, CheckBox } from 
 
 
 export default function App() {
+  /********************************
+  * Setting States
+  *********************************/
 	const [items, setItems] = useState([]);
 	const [newItemText, setNewItemText] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showFail, setShowFail] = useState(false);
 
+  /********************************
+  * Setting States
+  ********************************/
 	const generateList = items.map((item, index) => (
 		<View key={index} style={styles.listItemContainer}>
       <Text style={styles.item}>
@@ -20,6 +28,9 @@ export default function App() {
 		</View>
 	));
 
+  /********************************
+  * Helper Functions
+  ********************************/
   // Checking for duplicates
   const checkIfSame = () => {
     // Trimming newItemText and setting it to lowercase
@@ -36,7 +47,7 @@ export default function App() {
 
   const removeItemFromList = (task) => {
     setItems(items.filter((value, index) => index != task));
-    console.log(task.todo + " has been removed.");
+    console.log("Item has been removed.");
   };
 
 	const addToList = () => {
@@ -44,121 +55,178 @@ export default function App() {
 		setNewItemText("");
 	}
 
-// Checking for a valid input
+  // Checking for a valid input
 	const checkIfValid = () => {
     let trimmedText = newItemText.trim(); // Trimmed version of input
 
     // Doesn't allow for empty input
     if (trimmedText.length == 0) {
-      console.log('Your Input is empty. Please enter something.');
+      setShowSuccess(false);
+      setShowFail(true);
       return false;
     }
 
     // Doesn't allow for only numbers
     if (!isNaN(trimmedText)) {
-      console.log('Numbers alone are not allowed.');
+      setShowSuccess(false);
+      setShowFail(true);
       return false;
     }
 
     // Doesn't allow for special characters
-    if (!(/^[a-zA-Z0-9]*$/.test(trimmedText))) {
-      console.log('No special characters allowed.');
+    if (!(/^[a-zA-Z0-9- ]*$/.test(trimmedText))) {
+      setShowSuccess(false);
+      setShowFail(true);
       return false;
     }
 
     if (checkIfSame()) {
-      console.log(trimmedText + " already exists.");
+      setShowSuccess(false);
+      setShowFail(true);
     } else {
       addToList(); // If false the item will be added to array
+      setShowFail(false);
+      setShowSuccess(true);
+      console.log(showSuccess);
     }
-	} 
+	}
 
-return (
-	<View style={styles.container}>
-	<Text style={styles.header}>Todo List</Text>
-    <View style={styles.inputWrap}>
-        <TextInput
-          style={styles.input}
-          onChangeText = {text => setNewItemText(text)}
-          value = {newItemText}
-        />
-        <View style={styles.btnWrap}>
-        <Button
-            color="#7ca814"
-            title="Add Item"
-            onPress={checkIfValid}
-        />
+  /********************************
+  * Main App Render
+  ********************************/
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Todo List</Text>
+      <View style={styles.inputWrap}>
+          { showSuccess && 
+            <View style={styles.successMessage}>
+              <Text>Your Item has been added to the list</Text>
+            </View>
+          }
+          { showFail && 
+            <View style={styles.failMessage}>
+              <Text>Item is either already on the list, or is incorrect input</Text>
+            </View>
+          }
+          <TextInput
+            style={styles.input}
+            onChangeText = {text => setNewItemText(text)}
+            value = {newItemText}
+          />
+          <View style={styles.btnWrap}>
+          <Button
+              color="#7ca814"
+              title="Add Item"
+              onPress={checkIfValid}
+          />
 
-        <Button 
-            title="Clear"
-            onPress={()=> setNewItemText("")}
-        />
-        </View>
-    </View>
+          <Button 
+              title="Clear"
+              onPress={()=> setNewItemText("")}
+          />
+          </View>
+      </View>
 
-    <ScrollView style={styles.listWrap}>
-        {generateList}
-    </ScrollView>
+      <ScrollView style={styles.listWrap}>
+          {generateList}
+      </ScrollView>
       <StatusBar style="auto" />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    width: '100%',
-    backgroundColor: '#333',
-  },
-  inputWrap: {
-    backgroundColor: '#232323',
-    width: '100%',
-    // display: 'flex',
-    paddingBottom: 20,
-  },
-  header: {
-    backgroundColor: '#121212',
-    padding: '0.2em',
-    // fontSize: '2em',
-    // lineHeight: '2em',
-    width: '100%',
-    textAlign: 'center',
-    color: '#7ca814',
-    fontWeight: 'bold'
-  },
-  input: {
-    // border: '2px solid #000',
-    padding: 5,
-    width: '70%',
-    marginTop: 20,
-    marginBottom: 10,
-    backgroundColor: '#dedede',
-    borderRadius: 5,
-    alignSelf: 'center',
-  },
-  listWrap: {
-    display: 'flex',
-    width: '100%',
-    height: '400px',
-  },
-  listItemContainer: {
-    width: '90%',
-    padding: 10,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    margin: 'auto',
-  },
-  item: {
-    color: '#fff',
-  },
-  btnWrap: {
-    width: '70%',
-    margin: 'auto'
-  },
-  checkBox: {
-    marginRight: 20,
+  /********************************
+  * Styles
+  ********************************/
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      flexDirection: 'column',
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      width: '100%',
+      backgroundColor: '#333',
+    },
+    inputWrap: {
+      backgroundColor: '#232323',
+      width: '100%',
+      display: 'flex',
+      paddingBottom: 20,
+    },
+    header: {
+      backgroundColor: '#121212',
+      padding: '0.1em',
+      fontSize: '1.5em',
+      lineHeight: '1.5em',
+      width: '100%',
+      textAlign: 'center',
+      color: '#7ca814',
+      fontWeight: 'bold'
+    },
+    input: {
+      // border: '2px solid #000',
+      padding: 5,
+      width: '70%',
+      marginTop: 20,
+      marginBottom: 10,
+      backgroundColor: '#dedede',
+      borderRadius: 5,
+      alignSelf: 'center',
+    },
+    listWrap: {
+      width: '90%',
+      Height: '200px'
+    },
+    listItemContainer: {
+      width: '100%',
+      padding: 10,
+      backgroundColor: 'rgba(0,0,0,0.3)',
+      marginTop: 8,
+    },
+    item: {
+      color: '#fff',
+    },
+    btnWrap: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      width: '70%',
+      margin: 'auto'
+    },
+    checkBox: {
+      marginRight: 20,
+    },
+    dialogWrap: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: '2',
+    },
+    dialog: {
+      backgroundColor: "#dedede",
+      padding: 20,
+      borderRadius: 8,
+    },
+    buttonsWrap: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-evenly',
+      marginTop: 30,
+    },
+    successMessage: {
+      backgroundColor: '#20b550',
+      textAlign: 'center',
+    },
+    failMessage: {
+      backgroundColor: '#b52134',
+      textAlign: 'center',
+    }
   }
-});
+);
